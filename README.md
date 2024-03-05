@@ -102,9 +102,10 @@ mo --input_model project/<dir name>/models/backbone_<iteration_num>.onnx --input
 
 ## Known Issue
 - [X] **Issue 1: Dynamic Batch Size for OpenVINO model** 
-- [ ] **Issue 2: Dynamic Batch Size for ONNX model**
+- [X] **Issue 2: Dynamic Batch Size for ONNX model**
 
-Issue 1 is solved by using ```--input_shape [-1,C,H,W]``` when using OpenVINO model optimizer (mo), where -1 indicates dynamic batch size
+Issue 1 is solved by using ```--input_shape [-1,C,H,W]``` when using OpenVINO model optimizer (mo), where -1 indicates dynamic batch size </br>
+Issue 2 is solved by referencing [this code](https://github.com/mikel-brostrom/yolo_tracking/blob/master/boxmot/appearance/reid_export.py). But please make sure your onnx and onnx runtime is [compatible](https://onnxruntime.ai/docs/reference/compatibility.html)
 
 ## Acknowledgement
 This work was supported by the Greatech Integration (M) Sdn Bhd with project number 8084-0008.
