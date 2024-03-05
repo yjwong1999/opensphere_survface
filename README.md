@@ -84,8 +84,11 @@ CUDA_VISIBLE_DEVICES=0 python test.py --config config/test/survface.yml --proj_d
 # install onnx api
 pip install onnx==1.14.1
 
-# convert
-CUDA_VISIBLE_DEVICES=0 python onnx_exporter.py --config config/test/survface.yml --proj_dir project/<dir name>
+# convert to onnx with dynamic batch size
+CUDA_VISIBLE_DEVICES=0 python onnx_exporter.py --config config/test/survface.yml --proj_dir project/<dir name> --dynamic
+
+# convert to onnx with fixed batch size (32 for example)
+CUDA_VISIBLE_DEVICES=0 python onnx_exporter.py --config config/test/survface.yml --proj_dir project/<dir name> --batch-size 32
 ```
 
 - Convert ONNX to OpenVINO (for future usage)
