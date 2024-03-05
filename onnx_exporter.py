@@ -18,6 +18,10 @@ def parse_args():
             help='config files for testing datasets')
     parser.add_argument('--proj_dirs', '--list', nargs='+',
             help='the project directories to be tested')
+    parser.add_argument('--batch-size',type=int, default=1, 
+            help='biggest batch size')
+    parser.add_argument("--dynamic", action="store_true", 
+            help="ONNX dynamic axes")
     parser.add_argument('--start_time', 
             help='time to start training')
     args = parser.parse_args()
@@ -25,7 +29,7 @@ def parse_args():
     return args
 
 
-def export_onnx(config):
+def export_onnx(config, batch_size, dynamic):
     # parallel setting
     device_ids = os.environ['CUDA_VISIBLE_DEVICES']
     device_ids = list(range(len(device_ids.split(','))))
@@ -47,6 +51,10 @@ def export_onnx(config):
         bkb_net = bkb_net.cuda()
         bkb_net.eval()
 
+        if dynamic:
+            # input --> shape(N, 3, h, w), output --> shape(N, feat_size)
+            dynamic = {"images": {0: "batch"}, "output": {0: "batch"}}
+
         # model paths and run test
         model_dir = proj_dir + '/models' #test_config['project']['model_dir']
         save_iters = test_config['project']['save_iters']
@@ -57,9 +65,16 @@ def export_onnx(config):
 
         print(f'Convert {bkb_paths[-1]} to {bkb_paths[-1].replace(".pth", ".onnx")}')
         bkb_net.load_state_dict(torch.load(bkb_paths[-1]))
-        dummy_input = torch.randn((1, 3, 112, 112), dtype=torch.float32).cuda()
+        dummy_input = torch.randn((batch_size, 3, 112, 112), dtype=torch.float32).cuda()
         bkb_net(dummy_input)
-        torch.onnx.export(bkb_net.module, (dummy_input, ), f'{bkb_paths[-1].replace(".pth", ".onnx")}')
+        torch.onnx.export(
+                            bkb_net.module, 
+                            (dummy_input, ), 
+                            f'{bkb_paths[-1].replace(".pth", ".onnx")}',
+                            input_names=["images"],
+                            output_names=["output"],
+                            dynamic_axes=dynamic or None,
+                         )
 
 
 if __name__ == '__main__':
@@ -78,4 +93,4 @@ if __name__ == '__main__':
     if args.proj_dirs:
         config['project']['proj_dirs'] = args.proj_dirs
 
-    export_onnx(config)
+    export_onnx(config, args.batch_size, args.dynamic)
