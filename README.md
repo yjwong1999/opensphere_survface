@@ -79,7 +79,8 @@ CUDA_VISIBLE_DEVICES=0 python train.py --config config/train/survface_sfnet64_sp
 CUDA_VISIBLE_DEVICES=0 python test.py --config config/test/survface.yml --proj_dir project/<dir name>
 ```
 
-- Convert OpenSphere Model to ONNX (for future usage)
+## Export OpenSphere model to other format for future usage
+- Convert OpenSphere Model to ONNX
 ```
 # install onnx api
 pip install onnx==1.14.1
@@ -91,7 +92,7 @@ CUDA_VISIBLE_DEVICES=0 python onnx_exporter.py --config config/test/survface.yml
 CUDA_VISIBLE_DEVICES=0 python onnx_exporter.py --config config/test/survface.yml --proj_dir project/<dir name> --batch-size 32
 ```
 
-- Convert ONNX to OpenVINO (for future usage)
+- Convert ONNX to OpenVINO
 ```
 # install openvino developer api
 pip install -q "openvino-dev>=2023.0.0" "nncf>=2.5.0"
